@@ -31,19 +31,78 @@
   )
 
   const renderer = new THREE.WebGLRenderer()
+  renderer.shadowMap.enabled = true
   renderer.setSize(window.innerWidth, window.innerHeight)
   document.body.appendChild(renderer.domElement)
 
   const controls = new OrbitControls(camera, renderer.domElement)
 
-  const geometry = new THREE.BoxGeometry(1, 1, 1)
-  const material = new THREE.MeshStandardMaterial({ color: 0x00ff00 })
-  const cube = new THREE.Mesh(geometry, material)
-  scene.add(cube)
+  class Box extends THREE.Mesh{
+    constructor({ 
+      width, 
+      height, 
+      depth, 
+      color = '#888888', 
+      velocity = {
+        x: 0,
+        y: 0,
+        z: 0
+    } }) {
+      super(
+        new THREE.SphereGeometry(width, height, depth), 
+        new THREE.MeshPhongMaterial({ color })
+      )
+      this.width = width
+      this.height = height
+      this.depth = depth
+
+      this.bottom = this.position.y - this.height / 2
+      this.top = this.position.y + this.height / 2
+
+      this.velocity = velocity
+      this.position.set(position.x, position.y, position.z)
+    }
+
+  update(group) {
+    this.bottom = this.position.y - this.height / 2
+    this.top = this.position.y + this.height / 2
+
+    this.position.y += this.velocity.y
+
+    if(this.bottom <= ground.top) this.velocity.y = 0
+  }
+  }
+
+  // const geometry = new THREE.BoxGeometry(1, 1, 1)
+  // const material = new THREE.MeshStandardMaterial({ color: 0x00ff00 })
+  // const cube = new THREE.Mesh(geometry, material)
+  // scene.add(cube)
+
+  // const circleGeometry = new THREE.CircleGeometry(2, 360);
+  // const circleMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+  // const circleMesh = new THREE.Mesh(circleGeometry, circleMaterial);
+  // scene.add(circleMesh);
+
+  const sphereMesh = new Box({
+    radius: 1,
+    widthSegments: 32,
+    heightSegments: 32,
+    color: "#0000ff",
+    velocity: {
+      x: 0,
+      y: -0.01,
+      z: 0
+    }
+  })
+  sphereMesh.castShadow = true
+  scene.add(sphereMesh);
 
   const ground = new THREE.Mesh(
-    new THREE.BoxGeometry(1, 1, 1), 
-    new THREE.MeshStandardMaterial({ color: 0x00ff00 }))
+    new THREE.BoxGeometry(5, 0.5, 10),
+    new THREE.MeshStandardMaterial({ color: '#000fff' })
+  )
+  ground.receiveShadow = true
+  ground.position.y = -2
   scene.add(ground)
 
   // const light = new THREE.DirectionalLight(0xffffff, 2.0, 1000)
@@ -55,7 +114,10 @@
   // const lightHelper = new THREE.SpotLightHelper(light)
   // scene.add(light)
 
-  const light = new THREE.HemisphereLight(0xffffbb, 0x0808dd, 1)
+  const light = new THREE.DirectionalLight(0xffffff, 1)
+  light.position.y = 3
+  light.position.z = 2
+  light.castShadow = true
   scene.add(light)
   
 
@@ -64,8 +126,10 @@
   function animate() {
     requestAnimationFrame(animate)
     renderer.render(scene, camera)
-    cube.rotation.x += 0.01
-    cube.rotation.y += 0.01
+    sphereMesh.update(ground)
+    // sphereMesh.position.y += -0.01
+    // cube.rotation.x += 0.01
+    // cube.rotation.y += 0.01
   }
   animate()
 </script>
