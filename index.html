@@ -71,7 +71,7 @@
     scene.add(cube2)
   
     const geometry3 = new THREE.SphereGeometry(1, 32, 32)
-    const material3 = new THREE.MeshStandardMaterial({color: 0x0000ff, shininess: 50})
+    const material3 = new THREE.MeshStandardMaterial({color: 0x808080, shininess: 50})
     const cube3 = new THREE.Mesh(geometry3, material3)
     cube3.castShadow = true
     cube3.position.y = -0.76
@@ -96,7 +96,7 @@
     scene.add(cube5)
   
     const geometry6 = new THREE.SphereGeometry(1, 32, 32)
-    const material6 = new THREE.MeshStandardMaterial({color: 0x808080, shininess: 50})
+    const material6 = new THREE.MeshStandardMaterial({color: 0xEE82EE, shininess: 50})
     const cube6 = new THREE.Mesh(geometry6, material6)
     cube6.castShadow = true
     cube6.position.x = 5
@@ -127,12 +127,12 @@
     light.castShadow = true
     scene.add(light)
   
-    camera.position.z = 5
+    camera.position.y = 5
+    camera.position.z = 10
   
     function animate() {
       requestAnimationFrame(animate)
       renderer.render(scene, camera)
-  
     }
     animate()
   </script>
